@@ -47,9 +47,9 @@ Content-Type: application/json
 POST /api/auth/refresh
 Content-Type: application/json
 
-{
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
+    {
+      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    }
 ```
 
 ### Get Current User
@@ -169,6 +169,11 @@ Content-Type: application/json
   ]
 }
 ```
+
+
+
+
+
 
 ### Update School
 ```http

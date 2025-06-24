@@ -68,7 +68,7 @@ const studentSchema = z.object({
   parentPhone: z.string().regex(/^(\+234|0)[789][01]\d{8}$/).optional(),
   parentOccupation: z.string().optional(),
   familyIncome: z.number().min(0).optional(),
-  enrollmentDate: z.date().optional(),
+  enrollmentDate: z.string().transform((val) => new Date(val)).optional(),
   attendanceRate: z.number().min(0).max(100).optional(),
   academicPerformance: z.enum(['EXCELLENT', 'GOOD', 'AVERAGE', 'BELOW_AVERAGE']).optional(),
   hasSpecialNeeds: z.boolean().default(false),
