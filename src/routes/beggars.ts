@@ -5,7 +5,8 @@ import {
   createBeggar, 
   updateBeggar, 
   deleteBeggar,
-  getBeggarsByInterviewer
+  getBeggarsByInterviewer,
+  getAllBeggarsWithStats
 } from '../controllers/beggars';
 import { authenticateToken, requireInterviewer } from '../middleware/auth';
 import { validate } from '../middleware/validation';
@@ -14,7 +15,8 @@ import {
   updateBeggarSchema, 
   getBeggarSchema, 
   deleteBeggarSchema,
-  getBeggarsSchema
+  getBeggarsSchema,
+  getAllBeggarsWithStatsSchema
 } from '../validations/beggars';
 
 const router = Router();
@@ -24,6 +26,9 @@ router.use(authenticateToken);
 
 // Get all beggars (with filtering)
 router.get('/', validate(getBeggarsSchema), getAllBeggars);
+
+// Get all beggars with statistics
+router.get('/with-stats', validate(getAllBeggarsWithStatsSchema), getAllBeggarsWithStats);
 
 // Get beggars by interviewer
 router.get('/my-beggars', validate(getBeggarsSchema), getBeggarsByInterviewer);

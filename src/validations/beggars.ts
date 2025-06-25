@@ -65,4 +65,18 @@ export const getBeggarsSchema = z.object({
     isBegging: z.string().transform(val => val === 'true').optional(),
     interviewerId: z.string().optional(),
   }),
+});
+
+export const getAllBeggarsWithStatsSchema = z.object({
+  query: z.object({
+    page: z.string().transform(Number).pipe(z.number().min(1)).default('1'),
+    limit: z.string().transform(Number).pipe(z.number().min(1).max(100)).default('10'),
+    search: z.string().optional(),
+    lga: z.string().optional(),
+    stateOfOrigin: z.string().optional(),
+    isBegging: z.string().transform(val => val === 'true').optional(),
+    interviewerId: z.string().optional(),
+    ageRange: z.string().optional(),
+    gender: z.enum(['MALE', 'FEMALE']).optional(),
+  }),
 }); 

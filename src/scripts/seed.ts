@@ -1,11 +1,51 @@
-import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 import { Beggar } from '../models/Beggar';
 import { School } from '../models/School';
 import { User } from '../models/User';
+import { config } from '../config';
 
 // MongoDB Atlas connection string
 const MONGODB_URI = 'mongodb+srv://admin:admin123@cluster0.tbfk6vr.mongodb.net/quranic_schools_db?retryWrites=true&w=majority&appName=Cluster0';
+
+function generateAdminId(): string {
+  const random = Math.floor(10000 + Math.random() * 90000);
+  return `ADMIN${random}`;
+}
+
+async function createInitialAdmin() {
+  try {
+    // Check if admin already exists
+    const existingAdmin = await User.findOne({ role: 'ADMIN' });
+    if (existingAdmin) {
+      console.log('Admin account already exists');
+      return;
+    }
+
+    // Create admin account
+    const adminId = generateAdminId();
+    const passwordHash = await bcrypt.hash('admin123', 12);
+
+    const admin = new User({
+      interviewerId: adminId,
+      name: 'System Administrator',
+      email: 'admin@quranicschools.com',
+      phone: '08012345678',
+      lga: 'Kano Municipal',
+      role: 'ADMIN',
+      isActive: true,
+      passwordHash,
+    });
+
+    await admin.save();
+    console.log('Initial admin account created successfully');
+    console.log('Admin ID:', adminId);
+    console.log('Email: admin@quranicschools.com');
+    console.log('Password: admin123');
+  } catch (error) {
+    console.error('Error creating admin account:', error);
+  }
+}
 
 const seedData = async () => {
   try {
@@ -275,6 +315,8 @@ const seedData = async () => {
     ]);
 
     console.log('Created beggars:', beggars.length);
+
+    await createInitialAdmin();
 
     console.log('✅ Database seeded successfully!');
     console.log(`📊 Summary:`);

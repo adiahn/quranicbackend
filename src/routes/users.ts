@@ -5,7 +5,9 @@ import {
   createUser, 
   updateUser, 
   deleteUser,
-  toggleUserStatus
+  toggleUserStatus,
+  changeUserPassword,
+  deactivateUser
 } from '../controllers/users';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
 import { validate } from '../middleware/validation';
@@ -14,7 +16,9 @@ import {
   updateUserSchema, 
   getUserSchema, 
   deleteUserSchema,
-  getUsersSchema
+  getUsersSchema,
+  changePasswordSchema,
+  deactivateUserSchema
 } from '../validations/users';
 
 const router = Router();
@@ -40,5 +44,11 @@ router.delete('/:id', validate(deleteUserSchema), deleteUser);
 
 // Toggle user status
 router.patch('/:id/toggle-status', validate(getUserSchema), toggleUserStatus);
+
+// Change user password
+router.patch('/:id/change-password', validate(changePasswordSchema), changeUserPassword);
+
+// Deactivate user
+router.patch('/:id/deactivate', validate(deactivateUserSchema), deactivateUser);
 
 export default router; 

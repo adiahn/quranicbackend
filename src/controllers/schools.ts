@@ -8,7 +8,6 @@ export const getAllSchools = async (req: Request, res: Response): Promise<void> 
     const { page = 1, limit = 10, search, lga, status, interviewerId } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
 
-    // Build query
     const query: any = {};
     
     if (search) {
@@ -244,6 +243,134 @@ export const getSchoolsByInterviewer = async (req: AuthRequest, res: Response): 
     res.status(200).json(response);
   } catch (error) {
     console.error('Get schools by interviewer error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+export const getAllStudentsBySchools = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { page = 1, limit = 10, search, lga, status, schoolId, gender, isBegging, ageRange } = req.query;
+    const skip = (Number(page) - 1) * Number(limit);
+
+    // Build school query
+    const schoolQuery: any = {};
+    if (search) {
+      const searchQuery = buildSearchQuery(search as string, ['name', 'schoolCode']);
+      Object.assign(schoolQuery, searchQuery);
+    }
+    if (lga) schoolQuery.lga = lga;
+    if (status) schoolQuery.status = status;
+    if (schoolId) schoolQuery._id = schoolId;
+
+    // Build student query
+    const studentQuery: any = {};
+    if (gender) studentQuery['students.gender'] = gender;
+    if (isBegging !== undefined) studentQuery['students.isBegging'] = isBegging === 'true';
+    
+    // Age range filtering for students
+    if (ageRange) {
+      const [minAge, maxAge] = (ageRange as string).split('-').map(Number);
+      if (minAge && maxAge) {
+        studentQuery['students.age'] = { $gte: minAge, $lte: maxAge };
+      } else if (minAge) {
+        studentQuery['students.age'] = { $gte: minAge };
+      } else if (maxAge) {
+        studentQuery['students.age'] = { $lte: maxAge };
+      }
+    }
+
+    // Execute query with aggregation
+    const pipeline: any[] = [
+      { $match: schoolQuery },
+      { $unwind: '$students' },
+      { $match: studentQuery },
+      {
+        $project: {
+          _id: 1,
+          schoolCode: 1,
+          schoolName: '$name',
+          schoolLga: '$lga',
+          schoolStatus: '$status',
+          student: '$students',
+          interviewerId: 1,
+          createdAt: 1
+        }
+      },
+      { $sort: { createdAt: -1 } },
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: Number(limit) }
+          ],
+          total: [{ $count: 'count' }]
+        }
+      }
+    ];
+
+    const result = await School.aggregate(pipeline);
+    const students = result[0].data;
+    const total = result[0].total[0]?.count || 0;
+
+    // Get statistics
+    const statsPipeline: any[] = [
+      { $match: schoolQuery },
+      { $unwind: '$students' },
+      { $match: studentQuery },
+      {
+        $group: {
+          _id: null,
+          totalStudents: { $sum: 1 },
+          beggingStudents: { $sum: { $cond: ['$students.isBegging', 1, 0] } },
+          averageAge: { $avg: '$students.age' },
+          byGender: {
+            $push: {
+              gender: '$students.gender',
+              count: 1
+            }
+          },
+          bySchool: {
+            $push: {
+              schoolName: '$name',
+              schoolCode: '$schoolCode',
+              count: 1
+            }
+          },
+          byLga: {
+            $push: {
+              lga: '$lga',
+              count: 1
+            }
+          }
+        }
+      }
+    ];
+
+    const stats = await School.aggregate(statsPipeline);
+
+    const response = createPaginationResponse(
+      students,
+      total,
+      Number(page),
+      Number(limit)
+    );
+
+    // Add statistics to response
+    (response as any).statistics = stats[0] || {
+      totalStudents: 0,
+      beggingStudents: 0,
+      averageAge: 0,
+      byGender: [],
+      bySchool: [],
+      byLga: []
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error('Get all students by schools error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',

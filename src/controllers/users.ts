@@ -339,4 +339,114 @@ export const toggleUserStatus = async (req: AuthRequest, res: Response): Promise
       message: 'Internal server error',
     });
   }
+};
+
+export const changeUserPassword = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { password } = req.body;
+    const currentUser = req.user!;
+
+    // Check if current user is admin
+    if (currentUser.role !== 'ADMIN') {
+      res.status(403).json({
+        success: false,
+        message: 'Insufficient permissions',
+      });
+      return;
+    }
+
+    // Find user
+    const user = await User.findById(id);
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+      return;
+    }
+
+    // Hash new password
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    // Update password
+    user.passwordHash = passwordHash;
+    await user.save();
+
+    const response: ApiResponse = {
+      success: true,
+      message: 'Password changed successfully',
+      data: {
+        _id: user._id,
+        interviewerId: user.interviewerId,
+        name: user.name,
+      },
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error('Change user password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+export const deactivateUser = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const currentUser = req.user!;
+
+    // Check if current user is admin
+    if (currentUser.role !== 'ADMIN') {
+      res.status(403).json({
+        success: false,
+        message: 'Insufficient permissions',
+      });
+      return;
+    }
+
+    // Prevent self-deactivation
+    if (currentUser._id === id) {
+      res.status(400).json({
+        success: false,
+        message: 'Cannot deactivate your own account',
+      });
+      return;
+    }
+
+    // Find user
+    const user = await User.findById(id);
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+      return;
+    }
+
+    // Deactivate user
+    user.isActive = false;
+    await user.save();
+
+    const response: ApiResponse = {
+      success: true,
+      message: 'User deactivated successfully',
+      data: {
+        _id: user._id,
+        interviewerId: user.interviewerId,
+        name: user.name,
+        isActive: user.isActive,
+      },
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error('Deactivate user error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
 }; 

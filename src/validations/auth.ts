@@ -26,4 +26,21 @@ export const changePasswordSchema = z.object({
     currentPassword: z.string().min(6),
     newPassword: z.string().min(6).max(100),
   }),
+});
+
+export const adminLoginSchema = z.object({
+  body: z.object({
+    email: z.string().email(),
+    password: z.string().min(6).max(100),
+  }),
+});
+
+export const createAdminAccountSchema = z.object({
+  body: z.object({
+    name: z.string().min(2).max(100),
+    email: z.string().email(),
+    password: z.string().min(6).max(100),
+    phone: z.string().regex(/^(\+234|0)[789][01]\d{8}$/).optional(),
+    lga: z.string().min(1).optional(),
+  }),
 }); 

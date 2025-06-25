@@ -10,6 +10,12 @@ function generateInterviewerId(): string {
   return `INT${random}`;
 }
 
+function generateAdminId(): string {
+  // Generate a random 5-digit number and prefix with ADMIN
+  const random = Math.floor(10000 + Math.random() * 90000);
+  return `ADMIN${random}`;
+}
+
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, password } = req.body;
@@ -325,6 +331,174 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
     res.status(200).json(response);
   } catch (error) {
     console.error('Change password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+export const adminLogin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(401).json({
+        success: false,
+        message: 'Invalid credentials',
+      });
+      return;
+    }
+
+    // Check if user is admin
+    if (user.role !== 'ADMIN') {
+      res.status(403).json({
+        success: false,
+        message: 'Access denied. Admin privileges required.',
+      });
+      return;
+    }
+
+    // Check if user is active
+    if (!user.isActive) {
+      res.status(401).json({
+        success: false,
+        message: 'Account is deactivated',
+      });
+      return;
+    }
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash!);
+    if (!isPasswordValid) {
+      res.status(401).json({
+        success: false,
+        message: 'Invalid credentials',
+      });
+      return;
+    }
+
+    // Update last login
+    user.lastLogin = new Date();
+    await user.save();
+
+    // Create user object for token generation
+    const userObj: IUser = {
+      _id: user._id?.toString(),
+      interviewerId: user.interviewerId,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      lga: user.lga,
+      role: user.role,
+      passwordHash: user.passwordHash,
+      isActive: user.isActive,
+      lastLogin: user.lastLogin,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+
+    // Generate tokens
+    const accessToken = generateAccessToken(userObj);
+    const refreshToken = generateRefreshToken(userObj);
+
+    // Remove password from response
+    const userResponse = {
+      _id: user._id,
+      interviewerId: user.interviewerId,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      lga: user.lga,
+      role: user.role,
+      isActive: user.isActive,
+      lastLogin: user.lastLogin,
+    };
+
+    const response: ApiResponse = {
+      success: true,
+      message: 'Admin login successful',
+      data: {
+        user: userResponse,
+        accessToken,
+        refreshToken,
+      },
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error('Admin login error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+export const createAdminAccount = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { name, email, password, phone, lga } = req.body;
+
+    // Check if email already exists
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      res.status(400).json({
+        success: false,
+        message: 'Email already exists',
+      });
+      return;
+    }
+
+    // Generate unique admin ID
+    let adminId;
+    let exists = true;
+    while (exists) {
+      adminId = generateAdminId();
+      const existingUser = await User.findOne({ interviewerId: adminId });
+      exists = !!existingUser;
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    // Create admin user
+    const user = new User({
+      interviewerId: adminId,
+      name,
+      email,
+      phone,
+      lga,
+      role: 'ADMIN',
+      isActive: true,
+      passwordHash,
+    });
+    await user.save();
+
+    // Prepare response user object
+    const userResponse = {
+      _id: user._id,
+      interviewerId: user.interviewerId,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      lga: user.lga,
+      role: user.role,
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+    };
+
+    const response: ApiResponse = {
+      success: true,
+      message: 'Admin account created successfully',
+      data: {
+        user: userResponse,
+      },
+    };
+    res.status(201).json(response);
+  } catch (error) {
+    console.error('Create admin account error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',

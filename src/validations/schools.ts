@@ -142,4 +142,18 @@ export const getSchoolsSchema = z.object({
     status: z.enum(['DRAFT', 'PUBLISHED', 'INCOMPLETE']).optional(),
     interviewerId: z.string().optional(),
   }),
+});
+
+export const getAllStudentsBySchoolsSchema = z.object({
+  query: z.object({
+    page: z.string().transform(Number).pipe(z.number().min(1)).default('1'),
+    limit: z.string().transform(Number).pipe(z.number().min(1).max(100)).default('10'),
+    search: z.string().optional(),
+    lga: z.string().optional(),
+    status: z.enum(['DRAFT', 'PUBLISHED', 'INCOMPLETE']).optional(),
+    schoolId: z.string().optional(),
+    gender: z.enum(['MALE', 'FEMALE']).optional(),
+    isBegging: z.string().transform(val => val === 'true').optional(),
+    ageRange: z.string().optional(),
+  }),
 }); 

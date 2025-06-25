@@ -8,67 +8,78 @@ This is a comprehensive REST API for managing Quranic schools and street beggar 
 
 All API endpoints (except login and refresh token) require authentication using JWT tokens.
 
-### Login
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "interviewerId": "INT001",
-  "password": "password123"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Login successful",
-  "data": {
-    "user": {
-      "_id": "...",
-      "interviewerId": "INT001",
-      "name": "Ahmed Musa",
-      "email": "ahmed.musa@example.com",
-      "phone": "+2348012345678",
-      "lga": "Katsina",
-      "role": "INTERVIEWER",
-      "isActive": true,
-      "lastLogin": "2024-01-15T10:30:00.000Z"
-    },
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+### Register (Interviewer)
+- **URL:** `POST /api/auth/register`
+- **Auth:** Not required
+- **Body:**
+  ```json
+  {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password123"
   }
-}
-```
+  ```
+
+### Login (Interviewer)
+- **URL:** `POST /api/auth/login`
+- **Auth:** Not required
+- **Body:**
+  ```json
+  {
+    "interviewerId": "INT12345",
+    "password": "password123"
+  }
+  ```
+
+### Admin Login
+- **URL:** `POST /api/auth/admin/login`
+- **Auth:** Not required
+- **Body:**
+  ```json
+  {
+    "email": "admin@quranicschools.com",
+    "password": "admin123"
+  }
+  ```
+
+### Create Admin Account
+- **URL:** `POST /api/auth/admin/create`
+- **Auth:** Not required
+- **Body:**
+  ```json
+  {
+    "name": "System Administrator",
+    "email": "admin@quranicschools.com",
+    "password": "admin123",
+    "phone": "08012345678",
+    "lga": "Kano Municipal"
+  }
+  ```
 
 ### Refresh Token
-```http
-POST /api/auth/refresh
-Content-Type: application/json
-
-    {
-      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    }
-```
+- **URL:** `POST /api/auth/refresh`
+- **Auth:** Not required
+- **Body:**
+  ```json
+  {
+    "refreshToken": "your_refresh_token"
+  }
+  ```
 
 ### Get Current User
-```http
-GET /api/auth/me
-Authorization: Bearer <access_token>
-```
+- **URL:** `GET /api/auth/me`
+- **Auth:** Required
 
 ### Change Password
-```http
-POST /api/auth/change-password
-Authorization: Bearer <access_token>
-Content-Type: application/json
-
-{
-  "currentPassword": "oldpassword",
-  "newPassword": "newpassword123"
-}
-```
+- **URL:** `POST /api/auth/change-password`
+- **Auth:** Required
+- **Body:**
+  ```json
+  {
+    "currentPassword": "oldpassword",
+    "newPassword": "newpassword123"
+  }
+  ```
 
 ## 🏫 Schools API
 
@@ -169,11 +180,6 @@ Content-Type: application/json
   ]
 }
 ```
-
-
-
-
-
 
 ### Update School
 ```http
@@ -418,6 +424,23 @@ PATCH /api/users/:id/toggle-status
 Authorization: Bearer <access_token>
 ```
 
+### Change User Password
+```http
+PATCH /api/users/:id/change-password
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "password": "newpassword123"
+}
+```
+
+### Deactivate User
+```http
+PATCH /api/users/:id/deactivate
+Authorization: Bearer <access_token>
+```
+
 ## 📊 Analytics API (Supervisor/Admin Only)
 
 ### Get School Statistics
@@ -601,3 +624,163 @@ RATE_LIMIT_MAX_REQUESTS=100
 - Search functionality supports text search across relevant fields
 - Draft system allows saving incomplete forms for later completion
 - Analytics provide comprehensive data insights for decision making 
+
+## 👥 User Management
+
+### Get All Users
+- **URL:** `GET /api/users`
+- **Auth:** Required (Admin only)
+- **Query Parameters:**
+  - `page` (optional): Page number (default: 1)
+  - `limit` (optional): Items per page (default: 10, max: 100)
+  - `search` (optional): Search by name, interviewerId, or email
+  - `role` (optional): Filter by role (INTERVIEWER, SUPERVISOR, ADMIN)
+  - `lga` (optional): Filter by LGA
+  - `isActive` (optional): Filter by active status (true/false)
+
+### Get User by ID
+- **URL:** `GET /api/users/:id`
+- **Auth:** Required (Admin only)
+
+### Create User
+- **URL:** `POST /api/users`
+- **Auth:** Required (Admin only)
+- **Body:**
+  ```json
+  {
+    "interviewerId": "INT001",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "phone": "08012345678",
+    "lga": "Kano Municipal",
+    "role": "INTERVIEWER",
+    "password": "password123",
+    "isActive": true
+  }
+  ```
+
+### Update User
+- **URL:** `PUT /api/users/:id`
+- **Auth:** Required (Admin only)
+- **Body:** Same as create (all fields optional)
+
+### Delete User
+- **URL:** `DELETE /api/users/:id`
+- **Auth:** Required (Admin only)
+
+### Toggle User Status
+- **URL:** `PATCH /api/users/:id/toggle-status`
+- **Auth:** Required (Admin only)
+
+### Change User Password
+- **URL:** `PATCH /api/users/:id/change-password`
+- **Auth:** Required (Admin only)
+- **Body:**
+  ```json
+  {
+    "password": "newpassword123"
+  }
+  ```
+
+### Deactivate User
+- **URL:** `PATCH /api/users/:id/deactivate`
+- **Auth:** Required (Admin only)
+
+## 🏫 Schools
+
+### Get All Schools
+- **URL:** `GET /api/schools`
+- **Auth:** Required
+- **Query Parameters:**
+  - `page` (optional): Page number (default: 1)
+  - `limit` (optional): Items per page (default: 10, max: 100)
+  - `search` (optional): Search by name, address, or schoolCode
+  - `lga` (optional): Filter by LGA
+  - `status` (optional): Filter by status (DRAFT, PUBLISHED, INCOMPLETE)
+  - `interviewerId` (optional): Filter by interviewer
+
+### Get My Schools
+- **URL:** `GET /api/schools/my-schools`
+- **Auth:** Required (Interviewer)
+- **Query Parameters:** Same as get all schools
+
+### Get All Students by Schools
+- **URL:** `GET /api/schools/students`
+- **Auth:** Required
+- **Query Parameters:**
+  - `page` (optional): Page number (default: 1)
+  - `limit` (optional): Items per page (default: 10, max: 100)
+  - `search` (optional): Search by school name or schoolCode
+  - `lga` (optional): Filter by school LGA
+  - `status` (optional): Filter by school status
+  - `schoolId` (optional): Filter by specific school
+  - `gender` (optional): Filter by student gender (MALE, FEMALE)
+  - `isBegging` (optional): Filter by begging status (true/false)
+  - `ageRange` (optional): Filter by age range (e.g., "5-15", "10-", "-18")
+
+### Get School by ID
+- **URL:** `GET /api/schools/:id`
+- **Auth:** Required
+
+### Create School
+- **URL:** `POST /api/schools`
+- **Auth:** Required (Interviewer)
+- **Body:** School data object
+
+### Update School
+- **URL:** `PUT /api/schools/:id`
+- **Auth:** Required (Owner or Admin)
+
+### Delete School
+- **URL:** `DELETE /api/schools/:id`
+- **Auth:** Required (Owner or Admin)
+
+## 🥺 Beggars
+
+### Get All Beggars
+- **URL:** `GET /api/beggars`
+- **Auth:** Required
+- **Query Parameters:**
+  - `page` (optional): Page number (default: 1)
+  - `limit` (optional): Items per page (default: 10, max: 100)
+  - `search` (optional): Search by name or beggarId
+  - `lga` (optional): Filter by LGA
+  - `stateOfOrigin` (optional): Filter by state of origin
+  - `isBegging` (optional): Filter by begging status (true/false)
+  - `interviewerId` (optional): Filter by interviewer
+
+### Get All Beggars with Statistics
+- **URL:** `GET /api/beggars/with-stats`
+- **Auth:** Required
+- **Query Parameters:**
+  - All parameters from "Get All Beggars"
+  - `ageRange` (optional): Filter by age range (e.g., "5-15", "10-", "-18")
+  - `gender` (optional): Filter by gender (MALE, FEMALE)
+- **Response includes statistics:**
+  - Total beggars count
+  - Active beggars count
+  - Average age
+  - Distribution by gender
+  - Distribution by LGA
+
+### Get My Beggars
+- **URL:** `GET /api/beggars/my-beggars`
+- **Auth:** Required (Interviewer)
+- **Query Parameters:** Same as get all beggars
+
+### Get Beggar by ID
+- **URL:** `GET /api/beggars/:id`
+- **Auth:** Required
+
+### Create Beggar
+- **URL:** `POST /api/beggars`
+- **Auth:** Required (Interviewer)
+- **Body:** Beggar data object
+
+### Update Beggar
+- **URL:** `PUT /api/beggars/:id`
+- **Auth:** Required (Owner or Admin)
+
+### Delete Beggar
+- **URL:** `DELETE /api/beggars/:id`
+- **Auth:** Required (Owner or Admin) 

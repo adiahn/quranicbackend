@@ -30,12 +30,54 @@ A comprehensive backend API for census data collection on Quranic schools and st
 
 ## 🚀 Quick Start
 
-### 1. Clone and Install
+### Prerequisites
+- Node.js (v16 or higher)
+- MongoDB (local or Atlas)
+- npm or yarn
 
+### Installation
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up environment variables (see Environment Variables section)
+4. Run the seed script to create initial admin account: `npm run seed`
+5. Start the server: `npm start`
+
+## 👨‍💼 Admin Setup
+
+### Initial Admin Account
+After running the seed script, you'll have an initial admin account:
+- **Email:** admin@quranicschools.com
+- **Password:** admin123
+- **Admin ID:** Generated automatically (e.g., ADMIN12345)
+
+### Admin Authentication
+Admins can login using their email instead of interviewer ID:
 ```bash
-cd backend
-npm install
+POST /api/auth/admin/login
+{
+  "email": "admin@quranicschools.com",
+  "password": "admin123"
+}
 ```
+
+### Creating Additional Admin Accounts
+```bash
+POST /api/auth/admin/create
+{
+  "name": "New Administrator",
+  "email": "newadmin@quranicschools.com",
+  "password": "securepassword123",
+  "phone": "08012345678",
+  "lga": "Kano Municipal"
+}
+```
+
+### Admin Features
+- User management (create, update, delete, deactivate)
+- Change user passwords
+- View all schools, beggars, and students
+- Access analytics and statistics
+- System-wide data management
 
 ### 2. Environment Setup
 

@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { login, refreshToken, getCurrentUser, changePassword, register } from '../controllers/auth';
+import { login, refreshToken, getCurrentUser, changePassword, register, adminLogin, createAdminAccount } from '../controllers/auth';
 import { authenticateToken } from '../middleware/auth';
 import { validate } from '../middleware/validation';
-import { loginSchema, registerSchema, refreshTokenSchema, changePasswordSchema } from '../validations/auth';
+import { loginSchema, registerSchema, refreshTokenSchema, changePasswordSchema, adminLoginSchema, createAdminAccountSchema } from '../validations/auth';
 
 const router = Router();
 
@@ -16,6 +16,12 @@ router.post('/register', validate(registerSchema), register);
 
 // Login
 router.post('/login', validate(loginSchema), login);
+
+// Admin login
+router.post('/admin/login', validate(adminLoginSchema), adminLogin);
+
+// Create admin account
+router.post('/admin/create', validate(createAdminAccountSchema), createAdminAccount);
 
 // Refresh token
 router.post('/refresh', validate(refreshTokenSchema), refreshToken);

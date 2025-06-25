@@ -5,7 +5,8 @@ import {
   createSchool, 
   updateSchool, 
   deleteSchool,
-  getSchoolsByInterviewer
+  getSchoolsByInterviewer,
+  getAllStudentsBySchools
 } from '../controllers/schools';
 import { authenticateToken, requireInterviewer } from '../middleware/auth';
 import { validate } from '../middleware/validation';
@@ -14,7 +15,8 @@ import {
   updateSchoolSchema, 
   getSchoolSchema, 
   deleteSchoolSchema,
-  getSchoolsSchema
+  getSchoolsSchema,
+  getAllStudentsBySchoolsSchema
 } from '../validations/schools';
 
 const router = Router();
@@ -27,6 +29,9 @@ router.get('/', validate(getSchoolsSchema), getAllSchools);
 
 // Get schools by interviewer
 router.get('/my-schools', validate(getSchoolsSchema), getSchoolsByInterviewer);
+
+// Get all students by schools
+router.get('/students', validate(getAllStudentsBySchoolsSchema), getAllStudentsBySchools);
 
 // Get school by ID
 router.get('/:id', validate(getSchoolSchema), getSchoolById);

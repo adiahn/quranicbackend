@@ -49,4 +49,19 @@ export const getUsersSchema = z.object({
     lga: z.string().optional(),
     isActive: z.string().transform(val => val === 'true').optional(),
   }),
+});
+
+export const changePasswordSchema = z.object({
+  params: z.object({
+    id: z.string().min(1),
+  }),
+  body: z.object({
+    password: z.string().min(6).max(100),
+  }),
+});
+
+export const deactivateUserSchema = z.object({
+  params: z.object({
+    id: z.string().min(1),
+  }),
 }); 
