@@ -30,7 +30,7 @@ const headTeacherSchema = new Schema<IHeadTeacher>({
   },
   numberOfWives: {
     type: Number,
-    default: 0,
+    required: true,
     min: 0,
     max: 10,
   },
@@ -51,13 +51,19 @@ const headTeacherSchema = new Schema<IHeadTeacher>({
   },
   numberOfChildren: {
     type: Number,
-    default: 0,
+    required: true,
     min: 0,
     max: 50,
   },
   sourcesOfIncome: {
     type: [String],
-    default: [],
+    required: true,
+    validate: {
+      validator: function(v: string[]) {
+        return v.length > 0;
+      },
+      message: 'At least one source of income is required'
+    }
   },
   otherIncome: {
     type: String,
@@ -68,7 +74,7 @@ const headTeacherSchema = new Schema<IHeadTeacher>({
     required: true,
     min: 0,
   },
-  pictureUrl: {
+  picture: {
     type: String,
   },
   alarammaCode: {
@@ -127,7 +133,7 @@ const schoolStructureSchema = new Schema<ISchoolStructure>({
     min: 0,
     max: 100,
   },
-  toiletPictureUrl: {
+  toiletPicture: {
     type: String,
   },
   feedsPupils: {
@@ -181,7 +187,7 @@ const schoolStructureSchema = new Schema<ISchoolStructure>({
     type: String,
     trim: true,
   },
-  sleepingPlacePictureUrl: {
+  sleepingPlacePicture: {
     type: String,
   },
   hasOtherStatePupils: {
@@ -345,7 +351,7 @@ const studentSchema = new Schema<IStudent>({
     type: String,
     trim: true,
   },
-  pictureUrl: {
+  picture: {
     type: String,
   },
   parentName: {
@@ -366,7 +372,9 @@ const studentSchema = new Schema<IStudent>({
     min: 0,
   },
   enrollmentDate: {
-    type: Date,
+    type: String,
+    required: true,
+    match: /^\d{4}-\d{2}-\d{2}$/, // YYYY-MM-DD format
   },
   attendanceRate: {
     type: Number,

@@ -1,65 +1,65 @@
 import { z } from 'zod';
 
-// Head Teacher validation
+// Head Teacher validation - Updated to match frontend requirements
 const headTeacherSchema = z.object({
-  name: z.string().min(2).max(100),
-  phone: z.string().regex(/^(\+234|0)[789][01]\d{8}$/),
-  nationality: z.string().min(1),
+  name: z.string().min(2).max(100).trim(),
+  phone: z.string().regex(/^(\+234|0)[789][01]\d{8}$/).trim(),
+  nationality: z.string().min(1).trim(),
   maritalStatus: z.enum(['SINGLE', 'MARRIED', 'DIVORCED', 'WIDOWED']),
-  numberOfWives: z.number().min(0).max(10).default(0),
+  numberOfWives: z.number().min(0).max(10),
   age: z.number().min(18).max(120),
   educationLevel: z.enum(['EARLY_CHILDHOOD', 'PRIMARY', 'LOWER_SECONDARY', 'UPPER_SECONDARY', 'HIGHER', 'QURANIC', 'OTHER']),
   otherEducation: z.string().nullable().optional(),
-  numberOfChildren: z.number().min(0).max(50).default(0),
-  sourcesOfIncome: z.array(z.string()).default([]),
+  numberOfChildren: z.number().min(0).max(50),
+  sourcesOfIncome: z.array(z.string()).min(1), // At least one source required
   otherIncome: z.string().nullable().optional(),
   monthlyIncome: z.number().min(0),
-  pictureUrl: z.string().url().nullable().optional(),
   alarammaCode: z.string().nullable().optional(),
   yearsTutoring: z.number().min(0).max(100).nullable().optional(),
+  picture: z.string().url().nullable().optional(), // Changed from pictureUrl to picture
 });
 
-// School Structure validation
+// School Structure validation - Updated to match frontend requirements
 const schoolStructureSchema = z.object({
-  hasClasses: z.boolean().default(false),
+  hasClasses: z.boolean(),
   numberOfClasses: z.number().min(0).max(100).nullable().optional(),
   studentsPerClass: z.number().min(0).max(100).nullable().optional(),
   numberOfTeachers: z.number().min(0).max(1000),
   numberOfPupils: z.number().min(0).max(10000),
-  hasIntervention: z.boolean().default(false),
+  hasIntervention: z.boolean(),
   interventionType: z.string().nullable().optional(),
-  hasToilets: z.boolean().default(false),
+  hasToilets: z.boolean(),
   numberOfToilets: z.number().min(0).max(100).nullable().optional(),
-  toiletPictureUrl: z.string().url().nullable().optional(),
-  feedsPupils: z.boolean().default(false),
-  foodSources: z.array(z.string()).default([]),
+  toiletPicture: z.string().url().nullable().optional(), // Changed from toiletPictureUrl to toiletPicture
+  feedsPupils: z.boolean(),
+  foodSources: z.array(z.string()).min(1), // At least one source required
   otherFoodSource: z.string().nullable().optional(),
-  takesCareOfMedicalBills: z.boolean().default(false),
+  takesCareOfMedicalBills: z.boolean(),
   medicalFundsSource: z.string().nullable().optional(),
   medicalCareProvider: z.string().nullable().optional(),
-  sanitaryCareProvider: z.string().min(1),
-  lostPupilAction: z.string().min(1),
-  studyTime: z.string().min(1),
-  studyTimes: z.array(z.string()).default([]),
-  providesSleepingPlace: z.boolean().default(false),
+  sanitaryCareProvider: z.string().min(1).trim(),
+  lostPupilAction: z.string().min(1).trim(),
+  studyTime: z.string().min(1).trim(),
+  studyTimes: z.array(z.string()).min(1), // At least one study time required
+  providesSleepingPlace: z.boolean(),
   sleepingPlaceLocation: z.string().nullable().optional(),
-  sleepingPlacePictureUrl: z.string().url().nullable().optional(),
-  hasOtherStatePupils: z.boolean().default(false),
+  sleepingPlacePicture: z.string().url().nullable().optional(), // Changed from sleepingPlacePictureUrl to sleepingPlacePicture
+  hasOtherStatePupils: z.boolean(),
   otherStatesCountries: z.string().nullable().optional(),
-  hasParentAgreements: z.boolean().default(false),
+  hasParentAgreements: z.boolean(),
   agreementType: z.enum(['WRITTEN', 'VERBAL']).nullable().optional(),
-  allowsBegging: z.boolean().default(false),
+  allowsBegging: z.boolean(),
   beggingReason: z.string().nullable().optional(),
-  alarammaTeachesMultipleGroups: z.boolean().default(false),
-  hasCashTransferBeneficiaries: z.boolean().default(false),
+  alarammaTeachesMultipleGroups: z.boolean().nullable().optional(),
+  hasCashTransferBeneficiaries: z.boolean().nullable().optional(),
   numberOfCashTransferBeneficiaries: z.number().min(0).max(1000).nullable().optional(),
   infrastructurePictures: z.array(z.string()).default([]),
   medicalCareSource: z.string().nullable().optional(),
   sanitaryCareSource: z.string().nullable().optional(),
   accessibility: z.enum(['ALL_SEASONS', 'DRY_SEASON', 'RAINY_SEASON']).nullable().optional(),
-  hasManagementCommittee: z.boolean().default(false),
-  hasDevelopmentPlan: z.boolean().default(false),
-  hasSecurityGuard: z.boolean().default(false),
+  hasManagementCommittee: z.boolean().nullable().optional(),
+  hasDevelopmentPlan: z.boolean().nullable().optional(),
+  hasSecurityGuard: z.boolean().nullable().optional(),
   ownershipType: z.enum(['COMMUNITY', 'INDIVIDUAL', 'OTHER']).nullable().optional(),
   ownershipOther: z.string().nullable().optional(),
   studyPeriods: z.object({
@@ -67,14 +67,14 @@ const schoolStructureSchema = z.object({
     evening: z.string().nullable().optional(),
     night: z.string().nullable().optional(),
   }).nullable().optional(),
-  hasCrossBorderStudents: z.boolean().default(false),
+  hasCrossBorderStudents: z.boolean().nullable().optional(),
   crossBorderStatesCountries: z.string().nullable().optional(),
   parentAgreementType: z.enum(['WRITTEN', 'VERBAL']).nullable().optional(),
-  allowsBeggingWithConsent: z.boolean().default(false),
+  allowsBeggingWithConsent: z.boolean().nullable().optional(),
   beggingConsentReason: z.string().nullable().optional(),
 });
 
-// Student validation
+// Student validation - Updated to match frontend requirements
 const studentSchema = z.object({
   name: z.string().min(2).max(100).trim(),
   age: z.union([
@@ -85,64 +85,75 @@ const studentSchema = z.object({
       return num;
     }).pipe(z.number().min(0).max(25))
   ]),
-  gender: z.enum(['MALE', 'FEMALE']).transform(val => val.toUpperCase()),
+  gender: z.enum(['MALE', 'FEMALE'])
+    .transform(val => val?.toUpperCase())
+    .refine((val) => val && ['MALE', 'FEMALE'].includes(val), {
+      message: 'Gender must be MALE or FEMALE (received undefined or invalid value)'
+    }),
   permanentHomeAddress: z.string().min(5).max(500).trim(),
   nationality: z.string().min(1).trim(),
   state: z.string().min(1).trim(),
   lga: z.string().min(1).trim(),
   townVillage: z.string().min(1).trim(),
   fathersContactNumber: z.string().regex(/^(\+234|0)[789][01]\d{8}$/).trim(),
-  isBegging: z.boolean().default(false),
-  nin: z.string().nullable().optional(),
-  pictureUrl: z.string().url().nullable().optional(),
-  parentName: z.string().nullable().optional(),
-  parentPhone: z.string().regex(/^(\+234|0)[789][01]\d{8}$/).nullable().optional(),
-  parentOccupation: z.string().nullable().optional(),
+  isBegging: z.boolean(),
+  parentName: z.string().min(1).trim(), // Made required
+  parentPhone: z.string().regex(/^(\+234|0)[789][01]\d{8}$/).trim(), // Made required
+  parentOccupation: z.string().min(1).trim(), // Made required
   familyIncome: z.union([
-    z.number().min(0).nullable().optional(),
+    z.number().min(0),
     z.string().transform((val) => {
-      if (!val || val === '') return null;
+      if (!val || val === '') throw new Error('Family income is required');
       const num = parseInt(val);
-      return isNaN(num) ? null : num;
-    }).pipe(z.number().min(0)).nullable().optional()
+      if (isNaN(num)) throw new Error('Family income must be a valid number');
+      return num;
+    }).pipe(z.number().min(0))
   ]),
-  enrollmentDate: z.union([
-    z.string().transform((val) => new Date(val)).nullable().optional(),
-    z.date().nullable().optional()
-  ]),
+  enrollmentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // YYYY-MM-DD format required
   attendanceRate: z.union([
-    z.number().min(0).max(100).nullable().optional(),
+    z.number().min(0).max(100),
     z.string().transform((val) => {
-      if (!val || val === '') return null;
+      if (!val || val === '') throw new Error('Attendance rate is required');
       const num = parseInt(val);
-      return isNaN(num) ? null : num;
-    }).pipe(z.number().min(0).max(100)).nullable().optional()
+      if (isNaN(num)) throw new Error('Attendance rate must be a valid number');
+      return num;
+    }).pipe(z.number().min(0).max(100))
   ]),
-  academicPerformance: z.enum(['EXCELLENT', 'GOOD', 'AVERAGE', 'POOR']).nullable().optional(),
-  hasSpecialNeeds: z.boolean().default(false),
+  academicPerformance: z.enum(['EXCELLENT', 'GOOD', 'AVERAGE', 'POOR']),
+  hasSpecialNeeds: z.boolean(),
+  receivesScholarship: z.boolean(),
+  healthStatus: z.enum(['GOOD', 'FAIR', 'POOR']),
+  nin: z.string().nullable().optional(),
+  picture: z.string().url().nullable().optional(), // Changed from pictureUrl to picture
+  // Optional fields that were in the original schema but not in frontend spec
   specialNeedsType: z.string().nullable().optional(),
-  receivesScholarship: z.boolean().default(false),
   scholarshipType: z.string().nullable().optional(),
-  healthStatus: z.enum(['GOOD', 'FAIR', 'POOR']).nullable().optional(),
 });
 
-// Main school validation schemas
+// Main school validation schemas - Updated to match frontend requirements
 export const createSchoolSchema = z.object({
   body: z.object({
-    schoolCode: z.string().min(1),
-    name: z.string().min(2).max(200),
-    address: z.string().min(5).max(500),
-    phone: z.string().regex(/^(\+234|0)[789][01]\d{8}$/),
+    name: z.string().min(2).max(200).trim(),
+    schoolCode: z.string().min(1).trim(),
+    address: z.string().min(5).max(500).trim(),
+    phone: z.string().regex(/^(\+234|0)[789][01]\d{8}$/).trim(),
     email: z.string().email().nullable().optional(),
-    lga: z.string().min(1),
-    district: z.string().min(1),
-    ward: z.string().min(1),
+    lga: z.string().min(1).trim(),
+    district: z.string().min(1).trim(),
+    ward: z.string().min(1).trim(),
     village: z.string().nullable().optional(),
     community: z.string().nullable().optional(),
-    yearsInSchool: z.number().min(0).max(100).nullable().optional(),
-    headTeacher: headTeacherSchema.nullable().optional(),
-    schoolStructure: schoolStructureSchema.nullable().optional(),
-    students: z.array(studentSchema).default([]),
+    yearsInSchool: z.union([
+      z.number().min(0).max(100),
+      z.string().transform((val) => {
+        const num = parseInt(val);
+        if (isNaN(num)) throw new Error('Years in school must be a valid number');
+        return num;
+      }).pipe(z.number().min(0).max(100))
+    ]),
+    headTeacher: headTeacherSchema, // Made required
+    schoolStructure: schoolStructureSchema, // Made required
+    students: z.array(studentSchema).min(1), // At least one student required
   }),
 });
 
@@ -151,20 +162,27 @@ export const updateSchoolSchema = z.object({
     id: z.string().min(1),
   }),
   body: z.object({
-    schoolCode: z.string().min(1).optional(),
-    name: z.string().min(2).max(200).optional(),
-    address: z.string().min(5).max(500).optional(),
-    phone: z.string().regex(/^(\+234|0)[789][01]\d{8}$/).optional(),
+    name: z.string().min(2).max(200).trim().optional(),
+    schoolCode: z.string().min(1).trim().optional(),
+    address: z.string().min(5).max(500).trim().optional(),
+    phone: z.string().regex(/^(\+234|0)[789][01]\d{8}$/).trim().optional(),
     email: z.string().email().nullable().optional(),
-    lga: z.string().min(1).optional(),
-    district: z.string().min(1).optional(),
-    ward: z.string().min(1).optional(),
+    lga: z.string().min(1).trim().optional(),
+    district: z.string().min(1).trim().optional(),
+    ward: z.string().min(1).trim().optional(),
     village: z.string().nullable().optional(),
     community: z.string().nullable().optional(),
-    yearsInSchool: z.number().min(0).max(100).nullable().optional(),
+    yearsInSchool: z.union([
+      z.number().min(0).max(100),
+      z.string().transform((val) => {
+        const num = parseInt(val);
+        if (isNaN(num)) throw new Error('Years in school must be a valid number');
+        return num;
+      }).pipe(z.number().min(0).max(100))
+    ]).optional(),
     status: z.enum(['DRAFT', 'PUBLISHED', 'INCOMPLETE']).optional(),
-    headTeacher: headTeacherSchema.nullable().optional(),
-    schoolStructure: schoolStructureSchema.nullable().optional(),
+    headTeacher: headTeacherSchema.optional(),
+    schoolStructure: schoolStructureSchema.optional(),
     students: z.array(studentSchema).optional(),
   }),
 });

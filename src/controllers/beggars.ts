@@ -250,7 +250,7 @@ export const getBeggarsByInterviewer = async (req: AuthRequest, res: Response): 
       message: 'Internal server error',
     });
   }
-};
+}; 
 
 export const getAllBeggarsWithStats = async (req: Request, res: Response): Promise<void> => {
   try {

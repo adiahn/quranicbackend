@@ -30,7 +30,7 @@ export interface IHeadTeacher {
   sourcesOfIncome: string[];
   otherIncome?: string;
   monthlyIncome: number;
-  pictureUrl?: string;
+  picture?: string;
   alarammaCode?: string;
   yearsTutoring?: number;
 }
@@ -46,7 +46,7 @@ export interface ISchoolStructure {
   interventionType?: string;
   hasToilets: boolean;
   numberOfToilets?: number;
-  toiletPictureUrl?: string;
+  toiletPicture?: string;
   feedsPupils: boolean;
   foodSources: string[];
   otherFoodSource?: string;
@@ -59,7 +59,7 @@ export interface ISchoolStructure {
   studyTimes: string[];
   providesSleepingPlace: boolean;
   sleepingPlaceLocation?: string;
-  sleepingPlacePictureUrl?: string;
+  sleepingPlacePicture?: string;
   hasOtherStatePupils: boolean;
   otherStatesCountries?: string;
   hasParentAgreements: boolean;
@@ -103,20 +103,20 @@ export interface IStudent {
   townVillage: string;
   fathersContactNumber: string;
   isBegging: boolean;
+  parentName: string;
+  parentPhone: string;
+  parentOccupation: string;
+  familyIncome: number;
+  enrollmentDate: string;
+  attendanceRate: number;
+  academicPerformance: 'EXCELLENT' | 'GOOD' | 'AVERAGE' | 'POOR';
+  hasSpecialNeeds: boolean;
+  receivesScholarship: boolean;
+  healthStatus: 'GOOD' | 'FAIR' | 'POOR';
   nin?: string;
-  pictureUrl?: string;
-  parentName?: string;
-  parentPhone?: string;
-  parentOccupation?: string;
-  familyIncome?: number;
-  enrollmentDate?: Date;
-  attendanceRate?: number;
-  academicPerformance?: 'EXCELLENT' | 'GOOD' | 'AVERAGE' | 'POOR';
-  hasSpecialNeeds?: boolean;
+  picture?: string;
   specialNeedsType?: string;
-  receivesScholarship?: boolean;
   scholarshipType?: string;
-  healthStatus?: 'GOOD' | 'FAIR' | 'POOR';
 }
 
 // School types
