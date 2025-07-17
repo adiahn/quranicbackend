@@ -29,7 +29,7 @@ export const config = {
     ],
   },
   cors: {
-    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000'],
+    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000', 'https://your-frontend-domain.com'],
   },
   logging: {
     level: process.env.LOG_LEVEL || 'info',
