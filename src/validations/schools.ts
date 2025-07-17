@@ -15,6 +15,8 @@ const headTeacherSchema = z.object({
   otherIncome: z.string().optional(),
   monthlyIncome: z.number().min(0),
   pictureUrl: z.string().url().optional(),
+  alarammaCode: z.string().optional(),
+  yearsTutoring: z.number().min(0).max(100).optional(),
 });
 
 // School Structure validation
@@ -48,6 +50,28 @@ const schoolStructureSchema = z.object({
   agreementType: z.enum(['WRITTEN', 'VERBAL']).optional(),
   allowsBegging: z.boolean().default(false),
   beggingReason: z.string().optional(),
+  alarammaTeachesMultipleGroups: z.boolean().default(false),
+  hasCashTransferBeneficiaries: z.boolean().default(false),
+  numberOfCashTransferBeneficiaries: z.number().min(0).max(1000).optional(),
+  infrastructurePictures: z.array(z.string()).default([]),
+  medicalCareSource: z.string().optional(),
+  sanitaryCareSource: z.string().optional(),
+  accessibility: z.enum(['ALL_SEASONS', 'DRY_SEASON', 'RAINY_SEASON']).optional(),
+  hasManagementCommittee: z.boolean().default(false),
+  hasDevelopmentPlan: z.boolean().default(false),
+  hasSecurityGuard: z.boolean().default(false),
+  ownershipType: z.enum(['COMMUNITY', 'INDIVIDUAL', 'OTHER']).optional(),
+  ownershipOther: z.string().optional(),
+  studyPeriods: z.object({
+    morning: z.string().optional(),
+    evening: z.string().optional(),
+    night: z.string().optional(),
+  }).optional(),
+  hasCrossBorderStudents: z.boolean().default(false),
+  crossBorderStatesCountries: z.string().optional(),
+  parentAgreementType: z.enum(['WRITTEN', 'VERBAL']).optional(),
+  allowsBeggingWithConsent: z.boolean().default(false),
+  beggingConsentReason: z.string().optional(),
 });
 
 // Student validation
@@ -70,12 +94,12 @@ const studentSchema = z.object({
   familyIncome: z.number().min(0).optional(),
   enrollmentDate: z.string().transform((val) => new Date(val)).optional(),
   attendanceRate: z.number().min(0).max(100).optional(),
-  academicPerformance: z.enum(['EXCELLENT', 'GOOD', 'AVERAGE', 'BELOW_AVERAGE']).optional(),
+  academicPerformance: z.enum(['EXCELLENT', 'GOOD', 'AVERAGE', 'POOR']).optional(),
   hasSpecialNeeds: z.boolean().default(false),
   specialNeedsType: z.string().optional(),
   receivesScholarship: z.boolean().default(false),
   scholarshipType: z.string().optional(),
-  healthStatus: z.enum(['EXCELLENT', 'GOOD', 'FAIR', 'POOR']).optional(),
+  healthStatus: z.enum(['GOOD', 'FAIR', 'POOR']).optional(),
 });
 
 // Main school validation schemas

@@ -31,6 +31,8 @@ export interface IHeadTeacher {
   otherIncome?: string;
   monthlyIncome: number;
   pictureUrl?: string;
+  alarammaCode?: string;
+  yearsTutoring?: number;
 }
 
 // School Structure types
@@ -64,6 +66,28 @@ export interface ISchoolStructure {
   agreementType?: 'WRITTEN' | 'VERBAL';
   allowsBegging: boolean;
   beggingReason?: string;
+  alarammaTeachesMultipleGroups?: boolean;
+  hasCashTransferBeneficiaries?: boolean;
+  numberOfCashTransferBeneficiaries?: number;
+  infrastructurePictures?: string[];
+  medicalCareSource?: string;
+  sanitaryCareSource?: string;
+  accessibility?: 'ALL_SEASONS' | 'DRY_SEASON' | 'RAINY_SEASON';
+  hasManagementCommittee?: boolean;
+  hasDevelopmentPlan?: boolean;
+  hasSecurityGuard?: boolean;
+  ownershipType?: 'COMMUNITY' | 'INDIVIDUAL' | 'OTHER';
+  ownershipOther?: string;
+  studyPeriods?: {
+    morning?: string;
+    evening?: string;
+    night?: string;
+  };
+  hasCrossBorderStudents?: boolean;
+  crossBorderStatesCountries?: string;
+  parentAgreementType?: 'WRITTEN' | 'VERBAL';
+  allowsBeggingWithConsent?: boolean;
+  beggingConsentReason?: string;
 }
 
 // Student types
@@ -87,12 +111,12 @@ export interface IStudent {
   familyIncome?: number;
   enrollmentDate?: Date;
   attendanceRate?: number;
-  academicPerformance?: 'EXCELLENT' | 'GOOD' | 'AVERAGE' | 'BELOW_AVERAGE';
+  academicPerformance?: 'EXCELLENT' | 'GOOD' | 'AVERAGE' | 'POOR';
   hasSpecialNeeds?: boolean;
   specialNeedsType?: string;
   receivesScholarship?: boolean;
   scholarshipType?: string;
-  healthStatus?: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR';
+  healthStatus?: 'GOOD' | 'FAIR' | 'POOR';
 }
 
 // School types
@@ -182,7 +206,7 @@ export interface ApiResponse<T = any> {
   success: boolean;
   message: string;
   data?: T;
-  error?: string;
+  errors?: string[];
 }
 
 // Pagination types

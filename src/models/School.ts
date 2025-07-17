@@ -71,6 +71,15 @@ const headTeacherSchema = new Schema<IHeadTeacher>({
   pictureUrl: {
     type: String,
   },
+  alarammaCode: {
+    type: String,
+    trim: true,
+  },
+  yearsTutoring: {
+    type: Number,
+    min: 0,
+    max: 100,
+  },
 }, { _id: false });
 
 // School Structure Schema
@@ -199,6 +208,80 @@ const schoolStructureSchema = new Schema<ISchoolStructure>({
     type: String,
     trim: true,
   },
+  alarammaTeachesMultipleGroups: {
+    type: Boolean,
+    default: false,
+  },
+  hasCashTransferBeneficiaries: {
+    type: Boolean,
+    default: false,
+  },
+  numberOfCashTransferBeneficiaries: {
+    type: Number,
+    min: 0,
+    max: 1000,
+  },
+  infrastructurePictures: {
+    type: [String],
+    default: [],
+  },
+  medicalCareSource: {
+    type: String,
+    trim: true,
+  },
+  sanitaryCareSource: {
+    type: String,
+    trim: true,
+  },
+  accessibility: {
+    type: String,
+    enum: ['ALL_SEASONS', 'DRY_SEASON', 'RAINY_SEASON'],
+  },
+  hasManagementCommittee: {
+    type: Boolean,
+    default: false,
+  },
+  hasDevelopmentPlan: {
+    type: Boolean,
+    default: false,
+  },
+  hasSecurityGuard: {
+    type: Boolean,
+    default: false,
+  },
+  ownershipType: {
+    type: String,
+    enum: ['COMMUNITY', 'INDIVIDUAL', 'OTHER'],
+  },
+  ownershipOther: {
+    type: String,
+    trim: true,
+  },
+  studyPeriods: {
+    morning: String,
+    evening: String,
+    night: String,
+  },
+  hasCrossBorderStudents: {
+    type: Boolean,
+    default: false,
+  },
+  crossBorderStatesCountries: {
+    type: String,
+    trim: true,
+  },
+  parentAgreementType: {
+    type: String,
+    enum: ['WRITTEN', 'VERBAL'],
+  },
+  allowsBeggingWithConsent: {
+    type: Boolean,
+    default: false,
+  },
+  beggingConsentReason: {
+    type: String,
+    trim: true,
+  },
 }, { _id: false });
 
 // Student Schema
@@ -292,7 +375,7 @@ const studentSchema = new Schema<IStudent>({
   },
   academicPerformance: {
     type: String,
-    enum: ['EXCELLENT', 'GOOD', 'AVERAGE', 'BELOW_AVERAGE'],
+    enum: ['EXCELLENT', 'GOOD', 'AVERAGE', 'POOR'],
   },
   hasSpecialNeeds: {
     type: Boolean,
@@ -312,7 +395,7 @@ const studentSchema = new Schema<IStudent>({
   },
   healthStatus: {
     type: String,
-    enum: ['EXCELLENT', 'GOOD', 'FAIR', 'POOR'],
+    enum: ['GOOD', 'FAIR', 'POOR'],
   },
 }, { _id: true });
 

@@ -1,9 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { ApiResponse } from '../types';
 
-export interface AppError extends Error {
+interface AppError extends Error {
   statusCode?: number;
-  isOperational?: boolean;
 }
 
 export const errorHandler = (
@@ -53,7 +52,7 @@ export const errorHandler = (
   const response: ApiResponse = {
     success: false,
     message,
-    error: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+    errors: process.env.NODE_ENV === 'development' ? [err.stack || message] : [message],
   };
 
   res.status(statusCode).json(response);

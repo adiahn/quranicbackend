@@ -89,8 +89,14 @@ export const createSchool = async (req: AuthRequest, res: Response): Promise<voi
       res.status(400).json({
         success: false,
         message: 'School code already exists',
+        errors: ['School code must be unique'],
       });
       return;
+    }
+
+    // Set default status if not provided
+    if (!schoolData.status) {
+      schoolData.status = 'DRAFT';
     }
 
     const school = new School(schoolData);
@@ -108,6 +114,7 @@ export const createSchool = async (req: AuthRequest, res: Response): Promise<voi
     res.status(500).json({
       success: false,
       message: 'Internal server error',
+      errors: ['Failed to create school'],
     });
   }
 };
@@ -124,6 +131,7 @@ export const updateSchool = async (req: AuthRequest, res: Response): Promise<voi
       res.status(404).json({
         success: false,
         message: 'School not found',
+        errors: ['School with the specified ID does not exist'],
       });
       return;
     }
@@ -133,6 +141,7 @@ export const updateSchool = async (req: AuthRequest, res: Response): Promise<voi
       res.status(403).json({
         success: false,
         message: 'Insufficient permissions',
+        errors: ['You do not have permission to update this school'],
       });
       return;
     }
@@ -144,6 +153,7 @@ export const updateSchool = async (req: AuthRequest, res: Response): Promise<voi
         res.status(400).json({
           success: false,
           message: 'School code already exists',
+          errors: ['School code must be unique'],
         });
         return;
       }
@@ -168,6 +178,7 @@ export const updateSchool = async (req: AuthRequest, res: Response): Promise<voi
     res.status(500).json({
       success: false,
       message: 'Internal server error',
+      errors: ['Failed to update school'],
     });
   }
 };
@@ -183,6 +194,7 @@ export const deleteSchool = async (req: AuthRequest, res: Response): Promise<voi
       res.status(404).json({
         success: false,
         message: 'School not found',
+        errors: ['School with the specified ID does not exist'],
       });
       return;
     }
@@ -192,6 +204,7 @@ export const deleteSchool = async (req: AuthRequest, res: Response): Promise<voi
       res.status(403).json({
         success: false,
         message: 'Insufficient permissions',
+        errors: ['You do not have permission to delete this school'],
       });
       return;
     }
@@ -209,6 +222,7 @@ export const deleteSchool = async (req: AuthRequest, res: Response): Promise<voi
     res.status(500).json({
       success: false,
       message: 'Internal server error',
+      errors: ['Failed to delete school'],
     });
   }
 };

@@ -36,6 +36,7 @@ export const getAllDrafts = async (req: AuthRequest, res: Response): Promise<voi
     res.status(500).json({
       success: false,
       message: 'Internal server error',
+      errors: ['Failed to retrieve drafts'],
     });
   }
 };
@@ -50,6 +51,7 @@ export const getDraftById = async (req: AuthRequest, res: Response): Promise<voi
       res.status(404).json({
         success: false,
         message: 'Draft not found',
+        errors: ['Draft with the specified ID does not exist'],
       });
       return;
     }
@@ -66,6 +68,7 @@ export const getDraftById = async (req: AuthRequest, res: Response): Promise<voi
     res.status(500).json({
       success: false,
       message: 'Internal server error',
+      errors: ['Failed to retrieve draft'],
     });
   }
 };
@@ -85,6 +88,7 @@ export const createDraft = async (req: AuthRequest, res: Response): Promise<void
       res.status(400).json({
         success: false,
         message: 'Draft ID already exists',
+        errors: ['Draft ID must be unique for this user'],
       });
       return;
     }
@@ -111,6 +115,7 @@ export const createDraft = async (req: AuthRequest, res: Response): Promise<void
     res.status(500).json({
       success: false,
       message: 'Internal server error',
+      errors: ['Failed to create draft'],
     });
   }
 };
@@ -127,6 +132,7 @@ export const updateDraft = async (req: AuthRequest, res: Response): Promise<void
       res.status(404).json({
         success: false,
         message: 'Draft not found',
+        errors: ['Draft with the specified ID does not exist'],
       });
       return;
     }
@@ -148,6 +154,7 @@ export const updateDraft = async (req: AuthRequest, res: Response): Promise<void
     res.status(500).json({
       success: false,
       message: 'Internal server error',
+      errors: ['Failed to update draft'],
     });
   }
 };
@@ -167,6 +174,7 @@ export const deleteDraft = async (req: AuthRequest, res: Response): Promise<void
       res.status(404).json({
         success: false,
         message: 'Draft not found',
+        errors: ['Draft with the specified ID does not exist'],
       });
       return;
     }
@@ -182,6 +190,7 @@ export const deleteDraft = async (req: AuthRequest, res: Response): Promise<void
     res.status(500).json({
       success: false,
       message: 'Internal server error',
+      errors: ['Failed to delete draft'],
     });
   }
 };
@@ -226,6 +235,7 @@ export const saveDraft = async (req: AuthRequest, res: Response): Promise<void> 
     res.status(500).json({
       success: false,
       message: 'Internal server error',
+      errors: ['Failed to save draft'],
     });
   }
 }; 

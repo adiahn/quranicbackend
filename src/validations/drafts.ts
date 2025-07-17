@@ -4,7 +4,7 @@ export const createDraftSchema = z.object({
   body: z.object({
     draftId: z.string().min(1),
     type: z.enum(['SCHOOL', 'BEGGAR']),
-    data: z.any(), // Flexible data structure
+    data: z.any(),
   }),
 });
 
@@ -13,7 +13,7 @@ export const updateDraftSchema = z.object({
     id: z.string().min(1),
   }),
   body: z.object({
-    data: z.any(), // Flexible data structure
+    data: z.any(),
   }),
 });
 
@@ -26,6 +26,14 @@ export const getDraftSchema = z.object({
 export const deleteDraftSchema = z.object({
   params: z.object({
     id: z.string().min(1),
+  }),
+});
+
+export const saveDraftSchema = z.object({
+  body: z.object({
+    draftId: z.string().min(1),
+    type: z.enum(['SCHOOL', 'BEGGAR']),
+    data: z.any(),
   }),
 });
 
