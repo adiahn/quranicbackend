@@ -4,8 +4,8 @@ import { AnyZodObject, ZodError } from 'zod';
 export const validate = (schema: AnyZodObject) => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      // Enhanced debugging for student validation
-      if (req.body.students && Array.isArray(req.body.students)) {
+      // Fix: Only check students if req.body exists
+      if (req.body && req.body.students && Array.isArray(req.body.students)) {
         console.log('🔍 Validating students array with', req.body.students.length, 'students');
         req.body.students.forEach((student: any, index: number) => {
           console.log(`📝 Student ${index + 1}:`, {
@@ -68,9 +68,9 @@ export const validate = (schema: AnyZodObject) => {
           debug: {
             endpoint: req.path,
             method: req.method,
-            bodyKeys: Object.keys(req.body),
-            hasStudents: !!req.body.students,
-            studentsCount: req.body.students ? req.body.students.length : 0
+            bodyKeys: Object.keys(req.body || {}),
+            hasStudents: !!(req.body && req.body.students),
+            studentsCount: req.body && req.body.students ? req.body.students.length : 0
           }
         });
         return;

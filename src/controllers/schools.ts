@@ -2,46 +2,123 @@ import { Request, Response } from 'express';
 import { School } from '../models/School';
 import { createPaginationResponse, buildSearchQuery } from '../utils/pagination';
 import { ApiResponse, AuthRequest } from '../types';
+import mongoose from 'mongoose';
 
 export const getAllSchools = async (req: Request, res: Response): Promise<void> => {
   try {
+    console.log('🔍 getAllSchools called with query:', req.query);
+    
     const { page = 1, limit = 10, search, lga, status, interviewerId } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
+
+    console.log('📊 Query parameters:', {
+      page: Number(page),
+      limit: Number(limit),
+      skip,
+      search,
+      lga,
+      status,
+      interviewerId
+    });
 
     const query: any = {};
     
     if (search) {
       const searchQuery = buildSearchQuery(search as string, ['name', 'address', 'schoolCode']);
       Object.assign(query, searchQuery);
+      console.log('🔎 Search query:', searchQuery);
     }
     
     if (lga) query.lga = lga;
     if (status) query.status = status;
     if (interviewerId) query.interviewerId = interviewerId;
 
-    // Execute query
-    const [schools, total] = await Promise.all([
-      School.find(query)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(Number(limit))
-        .lean(),
-      School.countDocuments(query),
-    ]);
+    console.log('🎯 Final query:', JSON.stringify(query, null, 2));
 
-    const response = createPaginationResponse(
-      schools,
-      total,
-      Number(page),
-      Number(limit)
-    );
+    // Check database connection
+    if (!mongoose.connection.readyState) {
+      console.error('❌ Database not connected. Ready state:', mongoose.connection.readyState);
+      res.status(500).json({
+        success: false,
+        message: 'Database connection error',
+        error: 'Database not connected'
+      });
+      return;
+    }
 
+    console.log('✅ Database connected. Ready state:', mongoose.connection.readyState);
+
+    // Execute query with better error handling
+    let schools, total;
+    try {
+      [schools, total] = await Promise.all([
+        School.find(query)
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(Number(limit))
+          .lean(),
+        School.countDocuments(query),
+      ]);
+      
+      console.log('📈 Query results:', {
+        schoolsFound: schools.length,
+        totalCount: total,
+        query: JSON.stringify(query)
+      });
+    } catch (dbError: any) {
+      console.error('❌ Database query error:', dbError);
+      res.status(500).json({
+        success: false,
+        message: 'Database query failed',
+        error: dbError.message,
+        query: query
+      });
+      return;
+    }
+
+    // Create pagination response
+    let response;
+    try {
+      response = createPaginationResponse(
+        schools,
+        total,
+        Number(page),
+        Number(limit)
+      );
+      
+      console.log('✅ Pagination response created successfully');
+    } catch (paginationError: any) {
+      console.error('❌ Pagination error:', paginationError);
+      res.status(500).json({
+        success: false,
+        message: 'Pagination error',
+        error: paginationError.message,
+        data: { schools, total, page: Number(page), limit: Number(limit) }
+      });
+      return;
+    }
+
+    console.log('🎉 Successfully returning schools response');
     res.status(200).json(response);
-  } catch (error) {
-    console.error('Get all schools error:', error);
+  } catch (error: any) {
+    console.error('❌ Get all schools error:', error);
+    console.error('❌ Error stack:', error.stack);
+    console.error('❌ Error details:', {
+      name: error.name,
+      message: error.message,
+      code: error.code
+    });
+    
     res.status(500).json({
       success: false,
       message: 'Internal server error',
+      error: error.message,
+      debug: {
+        endpoint: '/api/schools',
+        method: 'GET',
+        query: req.query,
+        timestamp: new Date().toISOString()
+      }
     });
   }
 };

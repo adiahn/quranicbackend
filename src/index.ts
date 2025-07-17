@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { config } from './config';
 import { connectDB } from './config/database';
 import { errorHandler, notFound } from './middleware/errorHandler';
+import mongoose from 'mongoose';
 
 // Import routes
 import analyticsRoutes from './routes/analytics';
@@ -62,6 +63,15 @@ app.use('/uploads', express.static(config.upload.dir));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+  const dbStatus = mongoose.connection.readyState;
+  const dbStatusMap: Record<number, string> = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting'
+  };
+  const dbStatusText = dbStatusMap[dbStatus] || 'unknown';
+
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
@@ -69,6 +79,17 @@ app.get('/health', (req, res) => {
     environment: config.server.nodeEnv,
     port: config.server.port,
     version: '1.0.0',
+    database: {
+      status: dbStatusText,
+      readyState: dbStatus,
+      host: mongoose.connection.host || 'not connected',
+      name: mongoose.connection.name || 'not connected'
+    },
+    memory: {
+      used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+      total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+      external: Math.round(process.memoryUsage().external / 1024 / 1024)
+    }
   });
 });
 
