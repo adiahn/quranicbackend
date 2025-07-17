@@ -76,24 +76,48 @@ const schoolStructureSchema = z.object({
 
 // Student validation
 const studentSchema = z.object({
-  name: z.string().min(2).max(100),
-  age: z.number().min(0).max(25),
-  gender: z.enum(['MALE', 'FEMALE']),
-  permanentHomeAddress: z.string().min(5).max(500),
-  nationality: z.string().min(1),
-  state: z.string().min(1),
-  lga: z.string().min(1),
-  townVillage: z.string().min(1),
-  fathersContactNumber: z.string().regex(/^(\+234|0)[789][01]\d{8}$/),
+  name: z.string().min(2).max(100).trim(),
+  age: z.union([
+    z.number().min(0).max(25),
+    z.string().transform((val) => {
+      const num = parseInt(val);
+      if (isNaN(num)) throw new Error('Age must be a valid number');
+      return num;
+    }).pipe(z.number().min(0).max(25))
+  ]),
+  gender: z.enum(['MALE', 'FEMALE']).transform(val => val.toUpperCase()),
+  permanentHomeAddress: z.string().min(5).max(500).trim(),
+  nationality: z.string().min(1).trim(),
+  state: z.string().min(1).trim(),
+  lga: z.string().min(1).trim(),
+  townVillage: z.string().min(1).trim(),
+  fathersContactNumber: z.string().regex(/^(\+234|0)[789][01]\d{8}$/).trim(),
   isBegging: z.boolean().default(false),
   nin: z.string().nullable().optional(),
   pictureUrl: z.string().url().nullable().optional(),
   parentName: z.string().nullable().optional(),
   parentPhone: z.string().regex(/^(\+234|0)[789][01]\d{8}$/).nullable().optional(),
   parentOccupation: z.string().nullable().optional(),
-  familyIncome: z.number().min(0).nullable().optional(),
-  enrollmentDate: z.string().transform((val) => new Date(val)).nullable().optional(),
-  attendanceRate: z.number().min(0).max(100).nullable().optional(),
+  familyIncome: z.union([
+    z.number().min(0).nullable().optional(),
+    z.string().transform((val) => {
+      if (!val || val === '') return null;
+      const num = parseInt(val);
+      return isNaN(num) ? null : num;
+    }).pipe(z.number().min(0)).nullable().optional()
+  ]),
+  enrollmentDate: z.union([
+    z.string().transform((val) => new Date(val)).nullable().optional(),
+    z.date().nullable().optional()
+  ]),
+  attendanceRate: z.union([
+    z.number().min(0).max(100).nullable().optional(),
+    z.string().transform((val) => {
+      if (!val || val === '') return null;
+      const num = parseInt(val);
+      return isNaN(num) ? null : num;
+    }).pipe(z.number().min(0).max(100)).nullable().optional()
+  ]),
   academicPerformance: z.enum(['EXCELLENT', 'GOOD', 'AVERAGE', 'POOR']).nullable().optional(),
   hasSpecialNeeds: z.boolean().default(false),
   specialNeedsType: z.string().nullable().optional(),
